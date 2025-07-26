@@ -14,10 +14,12 @@ function App() {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.post("http://localhost:8000/api/email/genrater", {
-       emailContent,
-       tone 
-      });
+	    
+  const response = await axios.post("http://host.docker.internal:8000/api/email/generate", {
+    emailContent,
+    tone
+});
+	    
       setGeneratedReply(typeof response.data === 'string' ? response.data : JSON.stringify(response.data));
     } catch (error) {
       setError('Failed to generate eamil reply. Please try again');
