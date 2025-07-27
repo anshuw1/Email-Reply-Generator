@@ -1,11 +1,11 @@
-name: CI/CD Pipeline
+iname: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]  # Trigger on every push to main
+    branches: [ main ]  # Runs on push to main
 
 jobs:
-  build-and-push:
+  build-push-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,4 +30,19 @@ jobs:
       run: |
         docker build -t anshu1w/email-frontend ./email-writer-frontend
         docker push anshu1w/email-frontend
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+    - name: Deploy on EC2
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          cd ~/email-reply-deploy
+          git pull
+          docker-compose pull
+          docker-compose down
+          docker-compose up -d
+        EOF
 

@@ -7,9 +7,8 @@ services:
     container_name: email-backend
     ports:
       - "8000:8000"
-    environment:
-      - GEMINI_API_KEY=AIzaSyDkQingIowZJHEj8XyZEpG5dxH3Bk1ejLI
-      - GEMINI_API_URL=/v1beta/models/gemini-2.0-flash:generateContent
+    env_file:
+      - .env
     restart: unless-stopped
 
   frontend:

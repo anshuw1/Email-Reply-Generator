@@ -15,7 +15,7 @@ function App() {
     setError('');
     try {
 	    
-  const response = await axios.post("http://host.docker.internal:8000/api/email/generate", {
+  const response = await axios.post("/api/email/generate", {
     emailContent,
     tone
 });
