@@ -1,1 +1,14 @@
+# Node
+node_modules/
+dist/
+
+# Java
+*.class
+target/
+
+# Docker
+*.tar
+
+# Logs and temp
+*.log
 .env
