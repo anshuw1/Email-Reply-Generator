@@ -12,3 +12,4 @@ target/
 # Logs and temp
 *.log
 .env
+.env

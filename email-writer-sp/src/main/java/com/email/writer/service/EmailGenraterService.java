@@ -14,15 +14,15 @@ public class EmailGenraterService {
 
     private final WebClient webClient;
 
-    @Value("${gemini.api.url}")
+    @Value("${GEMINI_API_URL}")
     private String geminiApiUrl;
 
-    @Value("${gemini.api.key}")
+    @Value("${GEMINI_API_KEY}")
     private String geminiApiKey;
 
     public EmailGenraterService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder
-                .baseUrl("https://generativelanguage.googleapis.com")  // ✅ Base only
+                .baseUrl("https://generativelanguage.googleapis.com") // base only
                 .build();
     }
 
@@ -40,8 +40,8 @@ public class EmailGenraterService {
         try {
             String response = webClient.post()
                     .uri(uriBuilder -> uriBuilder
-                            .path(geminiApiUrl)              // ✅ Only path
-                            .queryParam("key", geminiApiKey) // ✅ Pass key as query param
+                            .path(geminiApiUrl)              // path only
+                            .queryParam("key", geminiApiKey) // API key as query param
                             .build())
                     .header("Content-Type", "application/json")
                     .bodyValue(requestBody)
@@ -49,9 +49,13 @@ public class EmailGenraterService {
                     .bodyToMono(String.class)
                     .block();
 
+            System.out.println("✅ Gemini API response: " + response);
             return extractResponseContent(response);
+
         } catch (Exception e) {
-            return "Failed to generate email reply. Please try again.";
+            System.err.println("❌ Gemini API error: " + e.getMessage());
+            e.printStackTrace();
+            return "❌ Failed to generate email reply. Please try again.";
         }
     }
 
@@ -67,7 +71,9 @@ public class EmailGenraterService {
                     .path("text")
                     .asText();
         } catch (Exception e) {
-            return "Error processing response: " + e.getMessage();
+            System.err.println("❌ Error extracting response content: " + e.getMessage());
+            e.printStackTrace();
+            return "❌ Error processing response: " + e.getMessage();
         }
     }
 
@@ -77,7 +83,8 @@ public class EmailGenraterService {
         if (emailRequest.getTone() != null && !emailRequest.getTone().isEmpty()) {
             prompt.append("Use a ").append(emailRequest.getTone()).append(" tone. ");
         }
-        prompt.append("\nOriginal email: \n").append(emailRequest.getEmailContent());
+	prompt.append("\nOriginal email: \n").append(emailRequest.getEmailContent());
+
         return prompt.toString();
     }
 }
